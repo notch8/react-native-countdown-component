@@ -37,7 +37,7 @@ class CountDown extends React.Component {
     if (this.props.onFinish) {
       this.onFinish = _.once(this.props.onFinish);
     }
-    this.timer = setInterval(this.updateTimer, 1000);
+    // this.timer = setInterval(this.updateTimer, 1000);
     AppState.addEventListener('change', this._handleAppStateChange);
   }
 
@@ -52,6 +52,10 @@ class CountDown extends React.Component {
         until: Math.max(nextProps.until, 0)
       });
     }
+  }
+
+  startTimer() {
+    this.timer = setInterval(this.updateTimer, 1000);
   }
 
   _handleAppStateChange = currentAppState => {
@@ -95,7 +99,7 @@ class CountDown extends React.Component {
       <View style={[
         styles.digitCont,
         {backgroundColor: digitBgColor},
-        {width: size * 2.3, height: size * 2.6},
+        {width: size * 1.2, height: size * 1.2, marginTop: size * .8},
       ]}>
         <Text style={[
           styles.digitTxt,
@@ -129,6 +133,7 @@ class CountDown extends React.Component {
 
   renderCountDown = () => {
     const {timeToShow} = this.props;
+    const {digitBgColor, digitTxtColor, timeTxtColor, size} = this.props;
     const {until} = this.state;
     const {days, hours, minutes, seconds} = this.getTimeLeft();
     const newTime = sprintf('%02d:%02d:%02d:%02d', days, hours, minutes, seconds).split(':');
@@ -137,11 +142,26 @@ class CountDown extends React.Component {
     return (
       <Component
         style={styles.timeCont}
-        onPress={this.props.onPress}
+        onPress={() => this.startTimer()}
       >
         {_.includes(timeToShow, 'D') ? this.renderDoubleDigits(this.props['labelD'], newTime[0]) : null}
         {_.includes(timeToShow, 'H') ? this.renderDoubleDigits(this.props['labelH'], newTime[1]) : null}
         {_.includes(timeToShow, 'M') ? this.renderDoubleDigits(this.props['labelM'], newTime[2]) : null}
+
+        <View style={styles.doubleDigitCont}><View style={styles.timeInnerCont}>
+          <View style={[
+            styles.digitCont,
+            {backgroundColor: digitBgColor},
+            {height: size * 1.2, marginTop: size * .8},
+          ]}>
+            <Text style={[
+              styles.digitTxt,
+              {fontSize: size},
+              {color: digitTxtColor}
+            ]}>:</Text>
+          </View>
+        </View><Text style={[styles.timeTxt, {fontSize: size / 2.4}, {color: timeTxtColor}, ]}> </Text></View>
+
         {_.includes(timeToShow, 'S') ? this.renderDoubleDigits(this.props['labelS'], newTime[3]) : null}
       </Component>
     );
@@ -196,7 +216,7 @@ const styles = StyleSheet.create({
   },
   digitTxt: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '300',
     fontVariant: ['tabular-nums']
   },
 });
